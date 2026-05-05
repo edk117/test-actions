@@ -1,0 +1,22 @@
+# История Git не нужна в Docker-образе.
+.git
+
+# Git-настройки не нужны внутри образа.
+.gitignore
+
+# Служебный файл macOS.
+.DS_Store
+
+# Локальное виртуальное окружение Python.
+.venv
+
+# Кэш Python.
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Кэши инструментов разработки.
+.pytest_cache
+.mypy_cache
+.ruff_cache
