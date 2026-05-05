@@ -20,6 +20,6 @@ uvicorn main:app --reload
 
 - `GET /` - проверка, что API работает
 - `GET /time` - текущее локальное время сервера
-- `GET /time/moscow` - текущее время в часовом поясе `Europe/Moscow`
+- `GET /date` - текущая локальная дата сервера
 
 Документация FastAPI доступна на `/docs`.
