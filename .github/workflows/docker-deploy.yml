@@ -90,23 +90,29 @@ jobs:
           # Останавливаем выполнение при ошибке.
           set -e
 
+          # Добавляем стандартные пути для non-interactive SSH-сессии.
+          export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+
+          # Находим Docker на сервере.
+          DOCKER_BIN="$(command -v docker)"
+
           # Логинимся в GHCR на удаленном сервере.
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+          echo "$GHCR_TOKEN" | "$DOCKER_BIN" login ghcr.io -u "$GHCR_USERNAME" --password-stdin
 
           # Скачиваем свежий образ.
-          docker pull "$IMAGE_NAME:$IMAGE_TAG"
+          "$DOCKER_BIN" pull "$IMAGE_NAME:$IMAGE_TAG"
 
           # Останавливаем и удаляем старый контейнер, если он есть.
-          docker stop "$CONTAINER_NAME" || true
-          docker rm "$CONTAINER_NAME" || true
+          "$DOCKER_BIN" stop "$CONTAINER_NAME" || true
+          "$DOCKER_BIN" rm "$CONTAINER_NAME" || true
 
           # Запускаем новый контейнер.
-          docker run -d \
+          "$DOCKER_BIN" run -d \
             --name "$CONTAINER_NAME" \
             --restart unless-stopped \
             -p 8000:8000 \
             "$IMAGE_NAME:$IMAGE_TAG"
 
           # Удаляем неиспользуемые Docker-образы.
-          docker image prune -f
+          "$DOCKER_BIN" image prune -f
           REMOTE_COMMANDS
