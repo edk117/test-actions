@@ -161,20 +161,7 @@ SERVER_SSH_KEY
 
 После подключения к серверу выполняются Docker-команды.
 
-Сначала сервер логинится в GitHub Container Registry:
-
-```bash
-echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-```
-
-Для этого используются секреты:
-
-```text
-GHCR_USERNAME
-GHCR_TOKEN
-```
-
-Затем сервер скачивает свежий образ:
+Так как package в GitHub Container Registry публичный, сервер скачивает образ без логина:
 
 ```bash
 docker pull "$IMAGE_NAME:$IMAGE_TAG"
@@ -223,8 +210,6 @@ SERVER_HOST
 SERVER_PORT
 SERVER_USER
 SERVER_SSH_KEY
-GHCR_USERNAME
-GHCR_TOKEN
 ```
 
 `SERVER_HOST` - IP-адрес или домен удаленного сервера.
@@ -234,10 +219,6 @@ GHCR_TOKEN
 `SERVER_USER` - пользователь на сервере.
 
 `SERVER_SSH_KEY` - приватный SSH-ключ для подключения.
-
-`GHCR_USERNAME` - GitHub username или владелец токена.
-
-`GHCR_TOKEN` - GitHub token с правом `read:packages`.
 
 ## Что должно быть на сервере
 
