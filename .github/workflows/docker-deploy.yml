@@ -79,14 +79,12 @@ jobs:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_PORT: ${{ secrets.SERVER_PORT }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
-          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           IMAGE_NAME: ${{ env.REGISTRY }}/${{ needs.build-and-push.outputs.image_name }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
         run: |
           ssh -i ~/.ssh/deploy_key -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" \
-            "GHCR_USERNAME='$GHCR_USERNAME' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' CONTAINER_NAME='$CONTAINER_NAME' bash -s" <<'REMOTE_COMMANDS'
+            "IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' CONTAINER_NAME='$CONTAINER_NAME' bash -s" <<'REMOTE_COMMANDS'
           # Останавливаем выполнение при ошибке.
           set -e
 
@@ -96,10 +94,7 @@ jobs:
           # Находим Docker на сервере.
           DOCKER_BIN="$(command -v docker)"
 
-          # Логинимся в GHCR на удаленном сервере.
-          echo "$GHCR_TOKEN" | "$DOCKER_BIN" login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-
-          # Скачиваем свежий образ.
+          # Скачиваем свежий публичный образ.
           "$DOCKER_BIN" pull "$IMAGE_NAME:$IMAGE_TAG"
 
           # Останавливаем и удаляем старый контейнер, если он есть.
