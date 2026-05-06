@@ -91,8 +91,23 @@ jobs:
           # Добавляем стандартные пути для non-interactive SSH-сессии.
           export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 
+          # Показываем базовую информацию для диагностики.
+          echo "Deploy user: $(whoami)"
+          echo "Deploy host: $(hostname)"
+          echo "Image: $IMAGE_NAME:$IMAGE_TAG"
+
           # Находим Docker на сервере.
-          DOCKER_BIN="$(command -v docker)"
+          DOCKER_BIN="$(command -v docker || true)"
+
+          # Останавливаем деплой, если Docker не найден.
+          if [ -z "$DOCKER_BIN" ]; then
+            echo "Docker command was not found on the remote server"
+            exit 1
+          fi
+
+          # Показываем найденный Docker.
+          echo "Docker binary: $DOCKER_BIN"
+          "$DOCKER_BIN" --version
 
           # Скачиваем свежий публичный образ.
           "$DOCKER_BIN" pull "$IMAGE_NAME:$IMAGE_TAG"
