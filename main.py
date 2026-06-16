@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, Query
 
@@ -48,12 +49,14 @@ def server_time() -> dict[str, str]:
     }
 
 
-@app.get("/date")
-def server_date() -> dict[str, str]:
-    today = datetime.now().astimezone().date()
+@app.get("/time/moscow")
+def moscow_time() -> dict[str, str]:
+    now = datetime.now(ZoneInfo("Europe/Moscow"))
 
     return {
-        "date": today.isoformat(),
+        "timezone": "Europe/Moscow",
+        "iso": now.isoformat(),
+        "unix": str(now.timestamp()),
     }
 
 
