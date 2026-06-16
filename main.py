@@ -72,9 +72,11 @@ def convert_time(
 
         formats = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%H:%M:%S", "%H:%M")
         naive: datetime | None = None
+        matched_fmt: str | None = None
         for fmt in formats:
             try:
                 naive = datetime.strptime(time, fmt)
+                matched_fmt = fmt
                 break
             except ValueError:
                 continue
@@ -86,12 +88,11 @@ def convert_time(
 
         if naive.tzinfo is not None:
             localized = naive
+        elif matched_fmt in ("%H:%M:%S", "%H:%M"):
+            today = datetime.now(source_zone).date()
+            localized = datetime.combine(today, naive.time(), tzinfo=source_zone)
         else:
-            if len(naive.strftime("%Y-%m-%d")) == 10:
-                localized = naive.replace(tzinfo=source_zone)
-            else:
-                today = datetime.now(source_zone).date()
-                localized = datetime.combine(today, naive.time(), tzinfo=source_zone)
+            localized = naive.replace(tzinfo=source_zone)
 
         converted = localized.astimezone(target_zone)
 
