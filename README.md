@@ -27,4 +27,38 @@ uvicorn main:app --reload
   - Поддерживаются IANA названия и русские названия городов: `Москва`, `Екатеринбург`, `Красноярск` и др.
   - Пример: `/convert_time?time=14:00&from_tz=UTC&to_tz=Москва`
 
+## Запуск через Docker
+
+### Сборка образа
+
+```bash
+docker build -t fastapi-time-api .
+```
+
+### Запуск контейнера
+
+```bash
+docker run -d \
+  --name fastapi-time-api \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  fastapi-time-api
+```
+
+### Проверка
+
+```bash
+curl http://localhost:8000/
+```
+
+### Остановка и удаление
+
+```bash
+docker stop fastapi-time-api && docker rm fastapi-time-api
+```
+
+## CI/CD
+
+При каждом пуше в `main` GitHub Actions автоматически собирает новый Docker-образ, загружает его в GitHub Container Registry и деплоит на удаленный сервер по SSH.
+
 Документация FastAPI доступна на `/docs`.
